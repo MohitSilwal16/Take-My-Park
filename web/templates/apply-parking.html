@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Apply for Parking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-br from-slate-800 to-blue-900 min-h-screen py-10 px-4 sm:px-6 text-slate-100">
+    <div class="max-w-7xl mx-auto bg-slate-700 p-6 sm:p-10 rounded-xl shadow-2xl ring-1 ring-slate-600/50 min-h-[80vh]">
+      
+      <!-- Header -->
+      <h1 class="text-2xl sm:text-3xl font-bold text-blue-200 mb-8">🚗 Apply for Parking</h1>
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        
+        <!-- Left: Parking Info, Existing Bookings, and Booking Form -->
+        <div class="flex-1 overflow-y-auto">
+          
+          <!-- Parking Info Card -->
+          <div class="bg-slate-800 border border-slate-600 rounded-lg shadow-md p-5 mb-10">
+            <h2 class="text-lg sm:text-xl font-semibold text-blue-300 mb-4 flex items-center gap-2">🔍 Parking Details</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-slate-200 text-base">
+              <div>
+                <p class="font-medium text-slate-400">👤 Owner:</p>
+                <p>{{ parking.username }}</p>
+              </div>
+              <div>
+                <p class="font-medium text-slate-400">💰 Price per Hour:</p>
+                <p id="price-per-hour">₹{{ parking.price_per_hour }}</p>
+              </div>
+              <div>
+                <p class="font-medium text-slate-400">🕒 Available From:</p>
+                <p>{{ parking.available_from.strftime('%d-%b-%Y %H:%M') }}</p>
+              </div>
+              <div>
+                <p class="font-medium text-slate-400">🕓 Available Till:</p>
+                <p>{{ parking.available_till.strftime('%d-%b-%Y %H:%M') }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Existing Bookings -->
+          <div class="bg-slate-800 border border-slate-600 rounded-lg p-4 mb-8 max-h-60 overflow-y-auto">
+            <h2 class="text-lg sm:text-xl font-semibold text-blue-300 mb-4 flex items-center gap-2">📅 Existing Bookings</h2>
+            <div class="flex flex-col gap-3">
+              {% for booking in bookings %}
+              <div class="bg-blue-900/40 px-3 py-3 rounded border border-blue-800 text-center">
+                <span class="text-slate-300 font-medium block">
+                  {{ booking.booked_from.strftime('%d-%b-%Y %H:%M') }} – {{ booking.booked_till.strftime('%d-%b-%Y %H:%M') }}
+                </span>
+              </div>
+              {% else %}
+              <p class="text-slate-400 text-center">No existing bookings yet.</p>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Booking Form -->
+          <form class="space-y-6" method="POST">
+            <h2 class="text-lg sm:text-xl font-semibold text-blue-300 mb-2">📝 Your Booking</h2>
+
+            <div>
+              <label for="booked_from" class="block text-slate-300 font-medium mb-1">Start Time</label>
+              <input
+                type="datetime-local"
+                id="booked_from"
+                name="booked_from"
+                value="{{ booked_from.strftime('%Y-%m-%dT%H:%M') if booked_from else '' }}"
+                required
+                class="w-full px-4 py-2 bg-slate-600 border border-slate-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label for="booked_till" class="block text-slate-300 font-medium mb-1">End Time</label>
+              <input
+                type="datetime-local"
+                id="booked_till"
+                name="booked_till"
+                value="{{ booked_till.strftime('%Y-%m-%dT%H:%M') if booked_till else '' }}"
+                required
+                class="w-full px-4 py-2 bg-slate-600 border border-slate-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <!-- Total Breakdown Display -->
+            <div id="amount-box" class="bg-slate-800 border border-slate-600 rounded-lg p-4 mt-4 hidden">
+              <p class="text-slate-400 font-medium mb-2">💵 Estimated Charges:</p>
+              <ul class="space-y-1 text-slate-300 text-base">
+                <li>
+                  Base (<span id="duration-hrs">0</span> hr @ ₹<span id="rate">0</span>/hr):
+                  <span class="float-right font-semibold text-slate-200">₹<span id="base-cost">0</span></span>
+                </li>
+                <li>
+                  Platform Fee:
+                  <span class="float-right font-semibold text-slate-200">₹<span id="platform-fee">15</span></span>
+                </li>
+                <hr class="my-2 border-slate-500" />
+                <li class="text-lg font-bold text-green-400">
+                  Total:
+                  <span class="float-right">₹<span id="total-amount">0</span></span>
+                </li>
+              </ul>
+            </div>
+
+            {% if error_msg %}
+            <div class="mt-6 text-red-400 font-medium text-center">⚠️ {{ error_msg }}</div>
+            {% endif %}
+
+            <div class="space-y-3">
+              <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 shadow-sm"
+              >
+                ✅ Send Payment Request
+              </button>
+
+              <a
+                href="{{ url_for('park.index') }}"
+                class="block w-full text-center bg-slate-600 hover:bg-slate-500 text-slate-100 font-semibold py-2 px-4 rounded-md transition duration-200"
+              >
+                ⬅ Return to Home
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const fromInput = document.getElementById("booked_from");
+      const tillInput = document.getElementById("booked_till");
+      const priceEl = document.getElementById("price-per-hour");
+      const rateSpan = document.getElementById("rate");
+      const baseSpan = document.getElementById("base-cost");
+      const feeSpan = document.getElementById("platform-fee");
+      const totalSpan = document.getElementById("total-amount");
+      const durationSpan = document.getElementById("duration-hrs");
+      const amountBox = document.getElementById("amount-box");
+
+      const PLATFORM_BOOKING_FEE = 10;
+      const pricePerHour = parseFloat(priceEl.textContent.replace("₹", ""));
+      rateSpan.textContent = pricePerHour;
+
+      function updateAmount() {
+        const start = new Date(fromInput.value);
+        const end = new Date(tillInput.value);
+
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+          amountBox.classList.add("hidden");
+          return;
+        }
+
+        const durationHrs = (end - start) / (1000 * 60 * 60);
+        if (durationHrs <= 0) {
+          amountBox.classList.remove("hidden");
+          durationSpan.textContent = "0";
+          baseSpan.textContent = "0";
+          totalSpan.textContent = "0";
+          return;
+        }
+
+        const baseCost = Math.ceil(durationHrs * pricePerHour);
+        const total = baseCost + PLATFORM_BOOKING_FEE;
+
+        durationSpan.textContent = durationHrs.toFixed(2);
+        baseSpan.textContent = baseCost;
+        feeSpan.textContent = PLATFORM_BOOKING_FEE;
+        totalSpan.textContent = total;
+
+        amountBox.classList.remove("hidden");
+      }
+
+      fromInput.addEventListener("input", updateAmount);
+      tillInput.addEventListener("input", updateAmount);
+    </script>
+  </body>
+</html>

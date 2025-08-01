@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post Parking Spot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-blue-950 min-h-screen flex items-center justify-center px-4 py-10 text-slate-100">
+    
+    <div class="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-md ring-1 ring-slate-700/60">
+      
+      <!-- Title -->
+      <h2 class="text-2xl sm:text-3xl font-bold mb-6 text-center text-blue-300">
+        Post a Parking Spot
+      </h2>
+
+      <!-- Form -->
+      <form method="POST" action="{{ url_for('park.post_parking') }}" enctype="multipart/form-data">
+        
+        <!-- Location -->
+        <div class="mb-4">
+          <label for="location_link" class="block text-slate-300 font-medium mb-2">
+            📍 Location Link
+          </label>
+          <input
+            type="url"
+            id="location_link"
+            name="location_link"
+            placeholder="https://maps.google.com/..."
+            required
+            class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <!-- Price -->
+        <div class="mb-4">
+          <label for="price_per_hour" class="block text-slate-300 font-medium mb-2">
+            💰 Price per Hour (₹)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            id="price_per_hour"
+            name="price_per_hour"
+            required
+            class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <!-- Available From -->
+        <div class="mb-4">
+          <label for="available_from" class="block text-slate-300 font-medium mb-2">
+            🕒 Available From
+          </label>
+          <input
+            type="datetime-local"
+            id="available_from"
+            name="available_from"
+            required
+            class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <!-- Available Till -->
+        <div class="mb-4">
+          <label for="available_till" class="block text-slate-300 font-medium mb-2">
+            🕓 Available Till
+          </label>
+          <input
+            type="datetime-local"
+            id="available_till"
+            name="available_till"
+            required
+            class="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <!-- Image Upload -->
+        <div class="mb-6">
+          <label for="image" class="block text-slate-300 font-medium mb-2">
+            🖼️ Upload Image
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            required
+            class="w-full text-white bg-slate-700 border border-slate-600 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+          />
+        </div>
+
+        <!-- Error Message -->
+        {% if error_msg %}
+        <div class="mb-4 text-red-400 text-center font-semibold">
+          {{ error_msg }}
+        </div>
+        {% endif %}
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition mb-4"
+        >
+          🚀 Post Parking Spot
+        </button>
+      </form>
+
+      <!-- Back to Home Button -->
+      <form action="{{ url_for('park.index') }}" method="GET">
+        <button
+          type="submit"
+          class="w-full bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded-md transition"
+        >
+          ⬅️ Back to Home
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

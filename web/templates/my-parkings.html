@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Parkings - Take My Parking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gradient-to-br from-slate-900 to-blue-950 text-gray-200 min-h-screen text-[17px]">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-800 shadow-md p-4 flex justify-between items-center sticky top-0 z-20">
+      <div class="text-3xl font-bold text-cyan-400 flex items-center gap-3">
+        <button id="mobileMenuButton" class="md:hidden text-cyan-400 hover:text-cyan-200 focus:outline-none" aria-label="Open menu">
+          <!-- Hamburger icon -->
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <span>🚗 Take My Parking</span>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <a href="{{ url_for('park.post_parking') }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md font-semibold transition text-sm sm:text-base">
+          + Post Parking
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md font-semibold transition text-sm sm:text-base">
+          Logout
+        </a>
+      </div>
+    </nav>
+
+    <!-- Mobile sidebar overlay -->
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
+    <!-- Mobile sidebar drawer -->
+    <aside
+      id="mobileSidebar"
+      class="fixed inset-y-0 left-0 z-40 w-64 bg-gray-800 border-r border-gray-700 p-6 space-y-6 overflow-y-auto transform -translate-x-full transition-transform duration-300 md:hidden"
+      aria-label="Mobile navigation"
+    >
+      <button id="mobileMenuClose" class="text-cyan-300 hover:text-cyan-100 mb-6 focus:outline-none" aria-label="Close menu">
+        <!-- Close icon -->
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+      <h2 class="text-2xl font-bold text-cyan-300 mb-6">📂 Navigation</h2>
+      <nav class="flex flex-col gap-5 text-lg font-medium">
+        <a href="{{ url_for('park.index') }}" class="hover:text-cyan-400">🏠 All Parkings</a>
+        <a href="{{ url_for('park.my_parkings') }}" class="text-cyan-400 font-bold">🅿️ My Parkings</a>
+        <a href="{{ url_for('park.my_booked_parkings') }}" class="hover:text-cyan-400">📖 My Bookings</a>
+        <a href="{{ url_for('transactions.index') }}" class="hover:text-cyan-400">💳 Transactions</a>
+      </nav>
+    </aside>
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+      <!-- Sidebar desktop -->
+      <aside
+        class="hidden md:block w-64 fixed top-[4rem] left-0 h-[calc(100vh-4rem)] bg-gray-800 border-r border-gray-700 p-6 space-y-6 overflow-y-auto"
+        aria-label="Desktop navigation"
+      >
+        <h2 class="text-2xl font-bold text-cyan-300 mb-6">📂 Navigation</h2>
+        <nav class="flex flex-col gap-5 text-lg font-medium">
+          <a href="{{ url_for('park.index') }}" class="hover:text-cyan-400">🏠 All Parkings</a>
+          <a href="{{ url_for('park.my_parkings') }}" class="text-cyan-400 font-bold">🅿️ My Parkings</a>
+          <a href="{{ url_for('park.my_booked_parkings') }}" class="hover:text-cyan-400">📖 My Bookings</a>
+          <a href="{{ url_for('transactions.index') }}" class="hover:text-cyan-400">💳 Transactions</a>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="md:ml-64 flex-1 p-6 sm:p-8">
+        <div class="bg-gray-800 rounded-xl shadow-md p-6 mb-10 text-center">
+          <h1 class="text-3xl font-bold text-cyan-300">🅿️ My Posted Parkings</h1>
+          <p class="text-gray-400 mt-2">Manage all parkings you've listed</p>
+        </div>
+
+        {% if parkings %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for p in parkings %}
+          <div
+            class="bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl border border-gray-700 transition"
+          >
+            <!-- Image -->
+            <img
+              src="{{ url_for('static', filename=p.image_url.replace('static/', '')) }}"
+              alt="Parking Image"
+              class="w-full h-48 object-cover"
+            />
+
+            <!-- Content -->
+            <div class="p-5 flex flex-col gap-3">
+              <a
+                href="{{ p.location_link }}"
+                target="_blank"
+                class="text-blue-400 hover:underline break-all text-sm"
+              >
+                📍 View Location
+              </a>
+
+              <div class="text-gray-300 text-sm space-y-1">
+                <p>💰 <strong>₹{{ p.price_per_hour }}</strong> / hour</p>
+                <p>
+                  ⏰ <strong>From:</strong> {{ p.available_from.strftime('%a, %b %d • %I:%M %p') }}
+                </p>
+                <p>
+                  ⏰ <strong>Till:</strong> {{ p.available_till.strftime('%a, %b %d • %I:%M %p') }}
+                </p>
+                <p>🆔 <strong>ID:</strong> {{ p.parking_id }}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center mt-10 text-slate-400 text-lg">
+          😕 You haven’t posted any parking spots yet.
+        </div>
+        {% endif %}
+      </main>
+    </div>
+
+    <script>
+      const mobileMenuButton = document.getElementById('mobileMenuButton');
+      const mobileSidebar = document.getElementById('mobileSidebar');
+      const mobileSidebarOverlay = document.getElementById('mobileSidebarOverlay');
+      const mobileMenuClose = document.getElementById('mobileMenuClose');
+
+      function openSidebar() {
+        mobileSidebar.classList.remove('-translate-x-full');
+        mobileSidebarOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // prevent background scroll
+      }
+
+      function closeSidebar() {
+        mobileSidebar.classList.add('-translate-x-full');
+        mobileSidebarOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      mobileMenuButton.addEventListener('click', openSidebar);
+      mobileMenuClose.addEventListener('click', closeSidebar);
+      mobileSidebarOverlay.addEventListener('click', closeSidebar);
+    </script>
+  </body>
+</html>
